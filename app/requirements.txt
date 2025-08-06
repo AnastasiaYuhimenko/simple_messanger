@@ -1,0 +1,14 @@
+fastapi[standard]
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic[email]
+python-multipart
+passlib[bcrypt]
+python-jose[cryptography]
+sqlmodel
+alembic
+asyncpg
+pyjwt
+passlib
+websocket-client

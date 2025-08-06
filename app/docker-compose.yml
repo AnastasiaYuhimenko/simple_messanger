@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app 
+      - ./.env:/app/.env
+    working_dir: /app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+
+
+    depends_on:
+      - db
+    environment:
+      - PYTHONPATH=/app
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: AnastasiaYukhimenko
+      POSTGRES_PASSWORD: sequrepassword
+      POSTGRES_DB: NeMax
+    ports:
+      - "5432:5432"
