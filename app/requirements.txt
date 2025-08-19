@@ -12,3 +12,9 @@ asyncpg
 pyjwt
 passlib
 websocket-client
+bcrypt==4.0.1
+python-jose==3.3.0
+websockets==13.1
+aiosqlite==0.20.0
+pydantic_settings==2.5.2
+jinja2==3.1.4
