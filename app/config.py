@@ -1,5 +1,11 @@
 from dotenv import load_dotenv
 import os
+import logging
+
+load_dotenv(dotenv_path=".env")
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv(dotenv_path=".env")
 
@@ -12,3 +18,6 @@ class Settings:
 
 
 settings = Settings()
+
+logger.info(f"POSTGRES_URL: {settings.POSTGRES_URL}")
+logger.info(f"SECRET_KEY: {settings.SECRET_KEY}")

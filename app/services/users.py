@@ -12,6 +12,7 @@ from passlib.context import CryptContext
 from schemas.token import TokenData
 from fastapi import status
 from sqlalchemy import select
+from fastapi import Request
 
 
 def get_user(user: UserGet, session: Session = Depends(get_session)):
@@ -70,7 +71,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(api_key_header)],
+    request: Request,
     session: Annotated[Session, Depends(get_session)],
 ):
     credentials_exception = HTTPException(
@@ -78,18 +79,28 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    token = request.cookies.get("users_access_token")
+
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+
+    if not token:
+        raise credentials_exception
+
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-
         userid = payload.get("sub")
-
         if userid is None:
             raise credentials_exception
         token_data = TokenData(user_id=userid)
     except jwt.InvalidTokenError:
         raise credentials_exception
+
     user = get_user_by_id(userid=token_data.user_id, session=session)
     if user is None:
         raise credentials_exception

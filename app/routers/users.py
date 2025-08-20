@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from schemas.users import UserCreate, UserOut, UserGet
 from passlib.context import CryptContext
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
@@ -14,11 +14,13 @@ from services.users import (
 )
 from schemas.token import Token
 from fastapi import status
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 
 router = APIRouter(prefix="/users")
 
-
+templates = Jinja2Templates(directory="frontend/templates")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -30,6 +32,11 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+
+@router.get("/", response_class=HTMLResponse, summary="Страница авторизации")
+async def get_categories(request: Request):
+    return templates.TemplateResponse("auth.html", {"request": request})
 
 
 @router.post("/register", response_model=UserOut)
@@ -58,7 +65,9 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
 
 
 @router.post("/login")
-async def login(user: UserGet, session: Session = Depends(get_session)):
+async def login(
+    user: UserGet, response: Response, session: Session = Depends(get_session)
+):
     user_obj = get_user(user=user, session=session)
     if user_obj is None:
         raise HTTPException(
@@ -76,9 +85,18 @@ async def login(user: UserGet, session: Session = Depends(get_session)):
         )
 
     access_token = create_access_token(data={"sub": str(user_obj.id)})
+    response.set_cookie(
+        key="users_access_token", path="/", value=access_token, httponly=True
+    )
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.post("/user/me", response_model=UserOut)
+@router.get("/user/me", response_model=UserOut)
 async def get_me(current_user: Annotated[UserOut, Depends(get_current_user)]):
     return current_user
+
+
+@router.post("/logout/")
+async def logout_user(response: Response):
+    response.delete_cookie(key="users_access_token", path="/")
+    return {"message": "Пользователь успешно вышел из системы"}

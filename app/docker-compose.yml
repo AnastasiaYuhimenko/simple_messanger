@@ -8,8 +8,9 @@ services:
     volumes:
       - ./:/app 
       - ./.env:/app/.env
+      - ./frontend:/app/frontend
     working_dir: /app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--ws", "websockets"]
 
 
     depends_on:
@@ -20,7 +21,7 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: AnastasiaYukhimenko
+      POSTGRES_USER: anastasiayukhimenko
       POSTGRES_PASSWORD: sequrepassword
       POSTGRES_DB: NeMax
     ports:
