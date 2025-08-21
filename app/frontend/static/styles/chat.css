@@ -99,13 +99,17 @@ body, html {
 }
 
 .message.sent {
-    background-color: #dcf8c6;
+    background-color: #1f8bffbd;
     align-self: flex-end;
     margin-left: auto;
+    text-align: right;
 }
 
 .message.received {
-    background-color: #f2f2f2;
+    background-color: #f0f0f0;
+    align-self: flex-start;
+    margin-right: auto;
+    text-align: left;
 }
 
 .input-area {
@@ -143,15 +147,6 @@ body, html {
     animation: bounce 2s infinite;
 }
 
-.my-message {
-    background-color: #e0ffe0; /* Зеленый фон для ваших сообщений */
-    text-align: right; /* Выравнивание текста по правому краю */
-}
-
-.other-message {
-    background-color: #f0f0f0; /* Серый фон для сообщений других пользователей */
-    text-align: left; /* Выравнивание текста по левому краю */
-}
 
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {

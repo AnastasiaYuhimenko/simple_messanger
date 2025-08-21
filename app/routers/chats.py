@@ -134,13 +134,11 @@ async def get_messages(
     messages = result.all()
     messages_out = [
         {
-            "chat_id": str(
-                message.id
-            ),  # если chat_id нет, можно использовать id сообщения
-            "sender": str(message.sender),  # UUID → строка
+            "chat_id": str(message.id),
+            "sender_id": str(message.sender),
             "text": message.text,
-            "send_time": message.send_time.isoformat(),  # datetime → строка
-            "recipient_id": str(message.user2),  # если у Pydantic есть такое поле
+            "send_time": message.send_time.isoformat(),
+            "recipient_id": str(message.user2),
         }
         for message in messages
     ]

@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   web:
     build: .
@@ -10,7 +8,7 @@ services:
       - ./.env:/app/.env
       - ./frontend:/app/frontend
     working_dir: /app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--ws", "websockets"]
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--ws", "websockets", --timeout-graceful-shutdown=0] # убрать --timeout-graceful-shutdown=0 после окончания разработки
 
 
     depends_on:
