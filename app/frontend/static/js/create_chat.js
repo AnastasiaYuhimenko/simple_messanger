@@ -4,6 +4,37 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+async function apiFetch(url, options = {}) {
+    try {
+        options.credentials = 'include';  
+
+        let response = await fetch(url, options);
+
+        if (response.status === 401) {
+            console.warn("Токен истёк, обновляем");
+
+            const refreshResponse = await fetch('/users/refresh', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+                console.log("Токен обновлён");
+                response = await fetch(url, options);
+            } else {
+                console.error("Не удалось обновить токен");
+                window.location.href = "/users/login";  
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Ошибка при запросе:", error);
+        throw error;
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("CreateForm");
     const input = form.querySelector("input");
@@ -20,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // Отправляем запрос на сервер
-            const response = await fetch("/create_chat", {
+            const response = await apiFetch("/create_chat", {
                 method: "POST",
                 credentials: 'include',
                 headers: {

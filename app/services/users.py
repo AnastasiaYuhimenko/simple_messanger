@@ -62,7 +62,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=30)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "token_type": "access_token"})
     encoded_jwt = jwt.encode(
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
@@ -106,3 +106,53 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+
+def create_refresh_token(data: dict):
+    to_encode = data.copy()
+
+    expire = datetime.now(timezone.utc) + timedelta(days=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+
+    return encoded_jwt
+
+
+def get_current_user_refresh(
+    request: Request,
+    session: Annotated[Session, Depends(get_session)],
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    token = request.cookies.get("refresh_token")
+
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+
+    if not token:
+        raise credentials_exception
+
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        userid = payload.get("sub")
+        if userid is None:
+            raise credentials_exception
+        token_data = TokenData(user_id=userid)
+    except jwt.InvalidTokenError:
+        raise credentials_exception
+
+    user = get_user_by_id(userid=token_data.user_id, session=session)
+    if user is None:
+        raise credentials_exception
+
+    return userid

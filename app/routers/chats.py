@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime, timedelta
 from uuid import UUID
 from fastapi import (
     APIRouter,
@@ -21,7 +22,7 @@ from services.users import get_current_user, get_user_by_name
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import and_, any_, or_
 from models.allmodels import Message as ModelMessage
-
+from services.celery_service import send_message_later
 
 router = APIRouter()
 
@@ -33,10 +34,8 @@ active_connections: Dict[int, WebSocket] = {}
 # Функция для отправки сообщения пользователю, если он подключен
 async def notify_user(user_id: UUID, message: dict):
     user_id = str(user_id)
-    """Отправить сообщение пользователю, если он подключен."""
     if user_id in active_connections:
         websocket = active_connections[user_id]
-        # Отправляем сообщение в формате JSON
         await websocket.send_json(message)
 
 
@@ -146,7 +145,6 @@ async def get_messages(
     return messages_out
 
 
-# добавление сообщений
 @router.post("/messages", response_model=MessageCreate)
 async def send_message(
     message: MessageCreate,
@@ -185,3 +183,21 @@ async def get_create_chat_page(
     return templates.TemplateResponse(
         "create_chat.html", {"request": request, "user": user_data}
     )
+
+
+@router.post("/messages_late")
+def send_message_late(
+    message: MessageCreate,
+    time: int = Body(..., embed=True),
+    current_user: User = Depends(get_current_user),
+):
+    eta_time = datetime.utcnow() + timedelta(minutes=time)
+
+    message_data = {
+        "sender_id": current_user.id,
+        "recipient_id": message.recipient_id,
+        "content": message.content,
+    }
+
+    send_message_later.apply_async(args=[message_data], eta=eta_time)
+    return {"status": "scheduled", "send_time": eta_time}

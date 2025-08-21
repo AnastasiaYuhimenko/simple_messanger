@@ -1,3 +1,35 @@
+async function apiFetch(url, options = {}) {
+    try {
+        options.credentials = 'include';  
+
+        let response = await fetch(url, options);
+
+        if (response.status === 401) {
+            console.warn("Токен истёк, обновляем");
+
+            const refreshResponse = await fetch('/users/refresh', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+                console.log("Токен обновлён");
+                response = await fetch(url, options);
+            } else {
+                console.error("Не удалось обновить токен");
+                window.location.href = "/users/login";  
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Ошибка при запросе:", error);
+        throw error;
+    }
+}
+
+
+
 // Обработка кликов по вкладкам
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => showTab(tab.dataset.tab));
@@ -18,7 +50,7 @@ const validateForm = fields => fields.every(field => field.trim() !== '');
 // Функция для отправки запросов
 const sendRequest = async (url, data) => {
     try {
-        const response = await fetch(url, {
+        const response = await apiFetch(url, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)

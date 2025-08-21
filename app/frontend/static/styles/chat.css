@@ -17,20 +17,20 @@ body, html {
 
 .user-list {
     width: 30%;
-    background-color: #f8f8f8;
+    background-color: #f7e6d4;
     border-right: 1px solid #ddd;
     overflow-y: auto;
 }
 
 .user-item {
     padding: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f7e6d4;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .user-item:hover, .user-item.active {
-    background-color: #e6e6e6;
+    background-color: #ffdcb6;
 }
 
 .chat-area {
@@ -41,7 +41,7 @@ body, html {
 
 .chat-header {
     padding: 15px;
-    background-color: #007bff;
+    background-color: #5758a6;
     color: white;
     font-weight: bold;
     display: flex;
@@ -54,7 +54,7 @@ body, html {
 }
 
 .create-chat-button {
-    background-color: #007bff;
+    background-color: #5758a6;
     color: white;
     border: none;
     padding: 23px 180px;
@@ -69,7 +69,7 @@ body, html {
 
 
 .logout-button {
-    background-color: #dc3545;
+    background-color: #c77974;
     color: white;
     border: none;
     padding: 8px 15px;
@@ -79,7 +79,7 @@ body, html {
 }
 
 .logout-button:hover {
-    background-color: #c82333;
+    background-color: #bf635d;
 }
 
 .messages {
@@ -99,7 +99,7 @@ body, html {
 }
 
 .message.sent {
-    background-color: #1f8bff73;
+    background-color: #5758a6a0;
     align-self: flex-end;
     margin-left: auto;
     text-align: right;
@@ -128,7 +128,7 @@ body, html {
 
 .input-area button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #5758a6;
     color: white;
     border: none;
     border-radius: 4px;
@@ -137,7 +137,7 @@ body, html {
 }
 
 .input-area button:hover {
-    background-color: #0056b3;
+    background-color: #005cbe;
 }
 
 .welcome-message {
@@ -158,4 +158,8 @@ body, html {
     60% {
         transform: translateY(-15px);
     }
+}
+
+#lateButton {
+    margin-left: 10px;
 }

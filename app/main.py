@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from exceptions import TokenExpiredException, TokenNoFoundException
 from fastapi.exceptions import HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 app = FastAPI()
 
@@ -27,7 +27,8 @@ app.mount("/styles", StaticFiles(directory="frontend/static/styles"), name="styl
 @app.exception_handler(TokenExpiredException)
 async def token_expired_exception_handler(request: Request, exc: HTTPException):
     # редирект на страницу /users/login
-    return RedirectResponse(url="/users/login")
+    # return RedirectResponse(url="/users/login")
+    return JSONResponse(status_code=401, content={"detail": "access token expired"})
 
 
 # Обработчик для ошибки TokenNoFound

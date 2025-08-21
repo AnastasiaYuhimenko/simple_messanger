@@ -8,11 +8,10 @@ services:
       - ./.env:/app/.env
       - ./frontend:/app/frontend
     working_dir: /app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--ws", "websockets", --timeout-graceful-shutdown=0] # убрать --timeout-graceful-shutdown=0 после окончания разработки
-
-
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--ws", "websockets", "--timeout-graceful-shutdown=0"] # убрать после разработки
     depends_on:
       - db
+      - redis
     environment:
       - PYTHONPATH=/app
 
@@ -24,3 +23,16 @@ services:
       POSTGRES_DB: NeMax
     ports:
       - "5432:5432"
+
+  celery-worker:
+    build: .
+    command: celery -A celery_app.celery_app worker --loglevel=info
+    depends_on:
+      - web
+      - redis
+      - db
+  
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"

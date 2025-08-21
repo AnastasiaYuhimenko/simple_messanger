@@ -7,6 +7,9 @@ from sqlmodel import Session, select
 from db import get_session
 from models.allmodels import User
 from services.users import (
+    create_refresh_token,
+    get_current_user_refresh,
+    get_user_by_id,
     register_user,
     create_access_token,
     get_user,
@@ -85,10 +88,15 @@ async def login(
         )
 
     access_token = create_access_token(data={"sub": str(user_obj.id)})
+    refresh_token = create_refresh_token(
+        data={"sub": str(user_obj.id), "token_type": "refresh_token"}
+    )
     response.set_cookie(
         key="users_access_token", path="/", value=access_token, httponly=True
     )
-    return Token(access_token=access_token, token_type="bearer")
+    response.set_cookie(key="refresh_token", path="/", value=refresh_token)
+
+    return Token(access_token=access_token, refresh_token=refresh_token)
 
 
 @router.get("/user/me", response_model=UserOut)
@@ -100,3 +108,18 @@ async def get_me(current_user: Annotated[UserOut, Depends(get_current_user)]):
 async def logout_user(response: Response):
     response.delete_cookie(key="users_access_token", path="/")
     return {"message": "Пользователь успешно вышел из системы"}
+
+
+@router.post("/refresh")
+def refresh(
+    response: Response,
+    user_id: Annotated[UserOut, Depends(get_current_user_refresh)],
+    request: Request,
+):
+    access_token = create_access_token(data={"sub": str(user_id)})
+    response.set_cookie(
+        key="users_access_token", path="/", value=access_token, httponly=True
+    )
+    return Token(
+        access_token=access_token, refresh_token=request.cookies.get("refresh_token")
+    )

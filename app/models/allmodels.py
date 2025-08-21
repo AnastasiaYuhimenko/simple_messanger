@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlmodel import SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field
 from sqlalchemy import Column, String, ForeignKey
 from uuid import uuid4, UUID
 from datetime import datetime, timezone
@@ -36,3 +36,12 @@ class Message(SQLModel, table=True):
     send_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     text: str
     user2: UUID
+
+
+class RefreshToken(SQLModel, table=True):
+    __tablename__ = "RefreshToken"
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    user_id: UUID = Field(foreign_key="Users.id")
+    token: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    expires_at: datetime

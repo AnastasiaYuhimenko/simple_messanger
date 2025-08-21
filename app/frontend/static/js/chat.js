@@ -1,10 +1,95 @@
 let selectedUserId = null;  // Хранит ID пользователя, с которым мы общаемся в чате
 let socket = null; 
 let messagePollingInterval = null;  // Таймер для периодической загрузки сообщений
+const modal = document.getElementById("myModal"); // окошко для минут
+
+document.getElementById("lateButton").onclick = function() {
+  modal.style.display = "block";
+}
+
+function startMessagePolling(userId) {
+    clearInterval(messagePollingInterval); 
+    messagePollingInterval = setInterval(async () => {
+        try {
+            const response = await apiFetch(`/messages/${userId}`);
+            const messages = await response.json();
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = messages.map(m => createMessageElement(m.text, m.sender_id)).join('');
+        } catch (error) {
+            console.error('Ошибка при опросе сообщений:', error);
+        }
+    }, 1000);
+}
+
+async function minutesentr() {
+    const input = document.getElementById("minutes").value;
+    if (isNaN(input) || input < 0) {
+    alert("Введите корректное количество минут");
+    return;
+    }
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();  
+
+    if (message && selectedUserId) { 
+        const payload = {
+            message: {
+                recipient_id: selectedUserId,
+                content: message
+            },
+            time: input
+}; 
+
+        try {
+            await apiFetch('/messages_late', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            socket.send(JSON.stringify(payload));  
+            addMessage(message, ""); 
+            messageInput.value = ''; 
+        } catch (error) {
+            console.error('Ошибка при отправке сообщения:', error);  
+        }
+    }
+  modal.style.display = "none"; // Закрыть окно
+}
+
+// обёртка над fetch для рефреша токена
+async function apiFetch(url, options = {}) {
+    try {
+        options.credentials = 'include';  
+
+        let response = await fetch(url, options);
+        if (response.status === 401) {
+            console.warn("Токен истёк, обновляем");
+
+            const refreshResponse = await fetch('/users/refresh', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (refreshResponse.ok) {
+                console.log("Токен обновлён");
+                response = await fetch(url, options);
+            } else {
+                console.error("Не удалось обновить токен");
+                window.location.href = "/users/login";  
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Ошибка при запросе:", error);
+        throw error;
+    }
+}
+
 
 async function logout() {
     try {
-        const response = await fetch('/users/logout/', { 
+        const response = await apiFetch('/users/logout/', { 
             method: 'POST', 
             credentials: 'include'
         });
@@ -24,6 +109,8 @@ async function selectUser(userId, userName, event) {
     document.getElementById('chatHeader').innerHTML = `<span>Чат с ${userName}</span><button class="logout-button" id="logoutButton">Выход</button>`;
     document.getElementById('messageInput').disabled = false;
     document.getElementById('sendButton').disabled = false;
+    document.getElementById('lateButton').disabled = false;
+
 
     document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
     event.target.classList.add('active'); 
@@ -41,7 +128,7 @@ async function selectUser(userId, userName, event) {
 
 async function loadMessages(userId) {
     try {
-        const response = await fetch(`/messages/${userId}`); 
+        const response = await apiFetch(`/messages/${userId}`); 
         const messages = await response.json();  
 
         const messagesContainer = document.getElementById('messages');
@@ -79,7 +166,7 @@ async function sendMessage() {
         const payload = {recipient_id: selectedUserId, content: message}; 
 
         try {
-            await fetch('/messages', {
+            await apiFetch('/messages', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
@@ -103,12 +190,6 @@ function addMessage(text, sender_id) {
 function createMessageElement(text, sender_id) {
     const messageClass = sender_id === selectedUserId ? 'received' : 'sent';
     return `<div class="message ${messageClass}">${text}</div>`;
-}
-
-
-
-function startMessagePolling(userId) {
-    clearInterval(messagePollingInterval); 
 }
 
 document.querySelectorAll('.user-item').forEach(item => {
