@@ -99,14 +99,14 @@ body, html {
 }
 
 .message.sent {
-    background-color: #1f8bffbd;
+    background-color: #1f8bff73;
     align-self: flex-end;
     margin-left: auto;
     text-align: right;
 }
 
 .message.received {
-    background-color: #f0f0f0;
+    background-color: #c9c9c9;
     align-self: flex-start;
     margin-right: auto;
     text-align: left;
