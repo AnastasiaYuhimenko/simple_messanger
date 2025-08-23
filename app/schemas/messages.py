@@ -13,3 +13,15 @@ class Message(BaseModel):
 class MessageCreate(BaseModel):
     recipient_id: UUID = Field(..., description="ID получателя сообщения")
     content: str = Field(..., description="Содержимое сообщения")
+
+
+class GroupMessagesCreate(BaseModel):
+    chat_id: UUID
+    text: str
+
+
+class GroupMessageRead(BaseModel):
+    chat_id: UUID
+    text: str
+    sender_id: UUID
+    send_time: datetime.datetime

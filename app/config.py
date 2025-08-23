@@ -14,10 +14,7 @@ class Settings:
     POSTGRES_URL = os.getenv("POSTGRES_URL")
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALGORITHM = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 
 settings = Settings()
-
-logger.info(f"POSTGRES_URL: {settings.POSTGRES_URL}")
-logger.info(f"SECRET_KEY: {settings.SECRET_KEY}")

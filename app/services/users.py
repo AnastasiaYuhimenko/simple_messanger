@@ -155,4 +155,4 @@ def get_current_user_refresh(
     if user is None:
         raise credentials_exception
 
-    return userid
+    return user

@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from exceptions import TokenExpiredException, TokenNoFoundException
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
+from routers.groupchats import router as group_chats
 
 app = FastAPI()
 
@@ -19,7 +20,7 @@ app.add_middleware(
 
 app.include_router(users, tags=["users"])
 app.include_router(chats, tags=["chats"])
-
+app.include_router(group_chats, tags=["group_chats"])
 app.mount("/", StaticFiles(directory="frontend/static", html=True), name="static")
 app.mount("/styles", StaticFiles(directory="frontend/static/styles"), name="styles")
 

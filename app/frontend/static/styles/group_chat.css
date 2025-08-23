@@ -190,3 +190,40 @@ body, html {
 #lateButton {
     margin-left: 10px;
 }
+
+
+.chat-members{
+    background-color: #5758a6;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-members:hover {
+    background-color: #005cbe;
+}
+
+#membersModal {
+    display: none; 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px; 
+    background: #f7e6d4;
+    border: 1px solid #f7e6d4;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+#membersModalContent div {
+    padding: 5px;
+    border-bottom: 1px solid #f7e6d4;
+}
+#membersModal button {
+    margin-top: 10px;
+    width: 100%;
+}

@@ -1,67 +1,71 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мини-чат</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles/chat.css') }}">
     <style>
-    #myModal {
-      display: none; 
-      position: fixed;
-      z-index: 1; 
-      left: 0;
-      top: 0;
-      width: 100%; 
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
+        #myModal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
 
-    .modal-content {
-      background-color: white;
-      margin: 15% auto; 
-      padding: 20px;
-      width: 300px; 
-      text-align: center;
-      border-radius: 10px;
-    }
-  </style>
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            border-radius: 10px;
+        }
+    </style>
 </head>
+
 <body>
-<div class="chat-container">
-    <div class="user-list" id="userList">
-    <button class="create-chat-button" onclick="window.location.href='/create_chat_page'">+</button>
-    {% for chat_user in users_all %}
-        <div class="user-item" data-user-id="{{ chat_user.id }}">
-            {{ chat_user.username }}
-        </div>
-    {% endfor %}
-    </div>
-
-    <div class="chat-area">
-        <div class="chat-header" id="chatHeader">
-            <span>Мини-чат</span>
-            <button class="logout-button" id="logoutButton" onclick="logout()">Выход</button>
+    <div class="chat-container">
+        <div class="user-list" id="userList">
+            <button class="create-chat-button" onclick="window.location.href='/create_chat_page'">+</button>
+            <button class="group-chats-button" onclick="window.location.href='/group_chats/chat'">Групповые чаты</button>
+            {% for chat_user in users_all %}
+            <div class="user-item" data-user-id="{{ chat_user.id }}">
+                {{ chat_user.username }}
+            </div>
+            {% endfor %}
         </div>
 
-    
-        <div class="messages" id="messages">
-            <div class="welcome-message">Выберите чат для общения</div>
-        </div>
-        <div class="input-area">
-            <input type="text" id="messageInput" placeholder="Введите сообщение..." disabled>
-            <button id="sendButton" disabled>Отправить</button>
-            <button id="lateButton" disabled>Отложенная отправка</button>
-        </div>
-        <div id="myModal">
-            <div class="modal-content">
-                <p>через сколько минут отправить?</p>
+        <div class="chat-area">
+            <div class="chat-header" id="chatHeader">
+                <span>Мини-чат</span>
+                <button class="logout-button" id="logoutButton" onclick="logout()">Выход</button>
+            </div>
+
+
+            <div class="messages" id="messages">
+                <div class="welcome-message">Выберите чат для общения</div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Введите сообщение..." disabled>
+                <button id="sendButton" disabled>Отправить</button>
+                <button id="lateButton" disabled>Отложенная отправка</button>
+            </div>
+            <div id="myModal">
+                <div class="modal-content">
+                    <p>через сколько минут отправить?</p>
                     <input type="number" id="minutes">
                     <button onclick="minutesentr()">ОК</button>
+                </div>
             </div>
         </div>
     </div>
-</div> 
-<script src="js/chat.js"></script>
+    <script src="js/chat.js"></script>
 </body>
+
 </html>

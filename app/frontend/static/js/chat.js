@@ -40,7 +40,7 @@ async function minutesentr() {
 }; 
 
         try {
-            await apiFetch('/messages_late', {
+            await fetch('/messages_late', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
@@ -53,7 +53,7 @@ async function minutesentr() {
             console.error('Ошибка при отправке сообщения:', error);  
         }
     }
-  modal.style.display = "none"; // Закрыть окно
+  modal.style.display = "none";
 }
 
 // обёртка над fetch для рефреша токена
@@ -89,7 +89,7 @@ async function apiFetch(url, options = {}) {
 
 async function logout() {
     try {
-        const response = await apiFetch('/users/logout/', { 
+        const response = await fetch('/users/logout/', { 
             method: 'POST', 
             credentials: 'include'
         });
@@ -104,7 +104,7 @@ async function logout() {
     }
 }
 
-async function selectUser(userId, userName, event) {
+async function selectGroup(userId, userName, event) {
     selectedUserId = userId;  
     document.getElementById('chatHeader').innerHTML = `<span>Чат с ${userName}</span><button class="logout-button" id="logoutButton">Выход</button>`;
     document.getElementById('messageInput').disabled = false;
@@ -166,7 +166,7 @@ async function sendMessage() {
         const payload = {recipient_id: selectedUserId, content: message}; 
 
         try {
-            await apiFetch('/messages', {
+            await fetch('/messages', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
@@ -193,7 +193,7 @@ function createMessageElement(text, sender_id) {
 }
 
 document.querySelectorAll('.user-item').forEach(item => {
-    item.onclick = event => selectUser(item.getAttribute('data-user-id'), item.textContent, event);  
+    item.onclick = event => selectGroup(item.getAttribute('data-user-id'), item.textContent, event);  
 });
 
 document.getElementById('sendButton').onclick = sendMessage;  

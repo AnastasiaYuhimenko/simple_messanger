@@ -1,32 +1,35 @@
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мессенджер: Вход и Регистрация</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles/auth.css') }}">
-</head>
-<body>
-<div class="container">
-    <div class="tabs">
-        <div class="tab active" data-tab="login">Авторизация</div>
-        <div class="tab" data-tab="register">Регистрация</div>
-    </div>
-    <div class="content">
-        <form id="loginForm" class="form active">
-            <input type="text" placeholder="username" required>
-            <input type="password" placeholder="password" required>
-            <button id="loginButton" type="submit">Войти</button>
-        </form>
-        <form id="registerForm" class="form">
-            <input type="url" placeholder="img">
-            <input type="text" placeholder="username" required>
-            <input type="email" placeholder="email" required>
-            <input type="password" placeholder="password" required>
-            <button id="registerButton" type="submit">Зарегистрироваться</button>
-        </form>
-    </div>
-</div>
 
-<script src="{{ url_for('static', path='js/auth.js') }}"></script>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Мессенджер: Вход и Регистрация</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles/auth.css') }}">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Авторизация</div>
+                <div class="tab" data-tab="register">Регистрация</div>
+            </div>
+            <div class="content">
+                <form id="loginForm" class="form active">
+                    <input type="text" placeholder="username" required>
+                    <input type="password" placeholder="password" required>
+                    <button id="loginButton" type="submit">Войти</button>
+                </form>
+                <form id="registerForm" class="form">
+                    <input type="url" placeholder="img">
+                    <input type="text" placeholder="username" required>
+                    <input type="email" placeholder="email" required>
+                    <input type="password" placeholder="password" required>
+                    <button id="registerButton" type="submit">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+
+        <script src="{{ url_for('static', path='js/auth.js') }}"></script>
+    </body>
+
 </html>

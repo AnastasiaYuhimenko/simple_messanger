@@ -1,10 +1,16 @@
 from typing import Optional
-from sqlmodel import Relationship, SQLModel, Field
+from sqlmodel import Enum, Relationship, SQLModel, Field
 from sqlalchemy import Column, String, ForeignKey
 from uuid import uuid4, UUID
 from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import UUID as saUUID
 from sqlalchemy.dialects.postgresql import ARRAY
+
+
+class Role(str, Enum):
+    owner = "owner"
+    admin = "admin"
+    member = "member"
 
 
 class User(SQLModel, table=True):
@@ -45,3 +51,43 @@ class RefreshToken(SQLModel, table=True):
     token: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     expires_at: datetime
+
+
+class GroupChat(SQLModel, table=True):
+    __tablename__ = "GroupChat"
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    title: str = Field(sa_column=Column("title", String))
+    owner_id: UUID = Field(
+        sa_column=Column(saUUID(as_uuid=True), ForeignKey("Users.id"))
+    )
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class GroupChatMembers(SQLModel, table=True):
+    __tablename__ = "GroupChatMembers"
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    group_id: UUID = Field(
+        sa_column=Column(
+            saUUID(as_uuid=True), ForeignKey("GroupChat.id", ondelete="CASCADE")
+        )
+    )
+    user_id: UUID = Field(
+        sa_column=Column(
+            saUUID(as_uuid=True), ForeignKey("Users.id", ondelete="CASCADE")
+        )
+    )
+    role: str = Field(default=Role.member)
+
+
+class GroupMessage(SQLModel, table=True):
+    __tablename__ = "GroupMessages"
+    id: UUID = Field(default_factory=uuid4, primary_key=True, index=True)
+    sender: UUID = Field(sa_column=Column(saUUID(as_uuid=True), ForeignKey("Users.id")))
+    send_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    text: str
+    group_id: UUID = Field(
+        sa_column=Column(
+            saUUID(as_uuid=True), ForeignKey("GroupChat.id", ondelete="CASCADE")
+        )
+    )
+    recipients: list[UUID] = Field(sa_column=Column(ARRAY(saUUID(as_uuid=True))))

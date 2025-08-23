@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            // Отправляем запрос на сервер
             const response = await apiFetch("/create_chat", {
                 method: "POST",
                 credentials: 'include',
@@ -63,10 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 const data = await response.json();
     
-                // достаём свой id из cookie
                 const myId = getCookie("user_id");
 
-                // ищем id собеседника
                 const otherUserId = data.users.find(u => u !== myId);
 
                 window.location.href = '/chat';
